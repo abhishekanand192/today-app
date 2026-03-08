@@ -508,7 +508,7 @@
         <!-- Header -->
         <div class="header">
           <div>
-            <div class="greeting-sub">Sunday · March 8</div>
+            <div class="greeting-sub" id="greetingDate"></div>
             <div class="greeting-main">Good <em>Morning,</em><br>Abhishek ✦</div>
             <div class="greeting-date">Have a lovely day.</div>
           </div>
@@ -784,13 +784,19 @@ setInterval(updateClock, 10000);
 
 /* Dynamic greeting */
 function updateGreeting() {
-  const h = new Date().getHours();
+  const now = new Date();
+  const h = now.getHours();
   const part = h < 12 ? 'Morning' : h < 17 ? 'Afternoon' : 'Evening';
   const name = S.name || 'Abhishek';
-  const el = document.querySelector('.greeting-main');
-  el.innerHTML = `Good <em>${part},</em><br>${name} ✦`;
+  document.querySelector('.greeting-main').innerHTML = `Good <em>${part},</em><br>${name} ✦`;
+  // Live date
+  const day  = now.toLocaleDateString('en-US', { weekday: 'long' });
+  const date = now.toLocaleDateString('en-US', { month: 'long', day: 'numeric' });
+  document.getElementById('greetingDate').textContent = `${day} · ${date}`;
 }
 updateGreeting();
+// Refresh greeting + date every minute so it stays current
+setInterval(updateGreeting, 60000);
 
 /* ═══════════════════════════════════════════════
    NAV SWITCHING
