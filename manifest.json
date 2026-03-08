@@ -1,0 +1,41 @@
+{
+  "name": "Today — Your Daily Sanctuary",
+  "short_name": "Today",
+  "description": "A calm, intentional wellness companion for breathing, hydration, mood, tasks, and reflection.",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#EEE8E0",
+  "theme_color": "#EBA882",
+  "lang": "en",
+  "categories": ["health", "lifestyle", "productivity"],
+  "icons": [
+    {
+      "src": "/icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Today",
+      "short_name": "Today",
+      "description": "Open the Today tab",
+      "url": "/?tab=today"
+    },
+    {
+      "name": "Reflect",
+      "short_name": "Reflect",
+      "description": "Open the Reflect tab",
+      "url": "/?tab=reflect"
+    }
+  ]
+}

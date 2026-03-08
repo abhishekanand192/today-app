@@ -4,6 +4,14 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
   <title>Today — Your Daily Sanctuary</title>
+  <meta name="description" content="A calm, intentional wellness companion for breathing, hydration, mood, tasks, and reflection." />
+  <meta name="theme-color" content="#EBA882" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Today" />
+  <link rel="manifest" href="/manifest.json" />
+  <link rel="icon" href="/icons/icon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="/icons/icon.svg" />
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300;1,9..40,400&display=swap" rel="stylesheet" />
   <style>
     :root {
@@ -1215,6 +1223,24 @@ core.addEventListener('click', () => {
     clearTimeout(phaseTimer);
   }
 });
+</script>
+
+<script>
+/* ── PWA: Service Worker registration ── */
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js')
+      .catch(err => console.warn('SW registration failed:', err));
+  });
+}
+
+/* ── PWA: Handle ?tab= deep-link from manifest shortcuts ── */
+(function () {
+  const tab = new URLSearchParams(location.search).get('tab');
+  if (!tab) return;
+  const target = document.querySelector(`.nav-item[data-panel="${tab}"]`);
+  if (target) target.click();
+})();
 </script>
 </body>
 </html>

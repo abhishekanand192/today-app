@@ -1,0 +1,41 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <defs>
+    <radialGradient id="bg" cx="40%" cy="35%" r="65%">
+      <stop offset="0%"   stop-color="#FDF6EE"/>
+      <stop offset="100%" stop-color="#EEE8E0"/>
+    </radialGradient>
+    <linearGradient id="accent" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%"   stop-color="#F5C5A3"/>
+      <stop offset="50%"  stop-color="#A8D5C2"/>
+      <stop offset="100%" stop-color="#A3C4E8"/>
+    </linearGradient>
+    <filter id="shadow">
+      <feDropShadow dx="6" dy="8" stdDeviation="14" flood-color="rgba(180,160,140,0.4)"/>
+      <feDropShadow dx="-4" dy="-5" stdDeviation="10" flood-color="rgba(255,255,255,0.9)"/>
+    </filter>
+  </defs>
+
+  <!-- Rounded square background -->
+  <rect width="512" height="512" rx="112" fill="url(#bg)" filter="url(#shadow)"/>
+
+  <!-- Decorative soft circle glow top-right -->
+  <circle cx="400" cy="110" r="130" fill="#F5C5A3" opacity="0.18"/>
+  <!-- Soft circle glow bottom-left -->
+  <circle cx="110" cy="400" r="110" fill="#A8D5C2" opacity="0.15"/>
+
+  <!-- Letter T — gradient filled, rounded -->
+  <text
+    x="256" y="346"
+    font-family="Georgia, serif"
+    font-size="290"
+    font-weight="300"
+    font-style="italic"
+    text-anchor="middle"
+    fill="url(#accent)"
+    opacity="0.92"
+  >T</text>
+
+  <!-- Subtle sparkle dot top-right of T -->
+  <circle cx="346" cy="148" r="10" fill="#A3C4E8" opacity="0.7"/>
+  <circle cx="362" cy="134" r="5"  fill="#F5C5A3" opacity="0.6"/>
+</svg>
