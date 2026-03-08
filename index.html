@@ -240,8 +240,9 @@
     }
     .checkbox svg { width:14px;height:14px; }
     .checkbox.unchecked svg { display:none; }
-    .task-text { flex:1;font-size:14.5px;font-weight:400;color:var(--text-dark);line-height:1.4; }
+    .task-text { flex:1;font-size:14.5px;font-weight:400;color:var(--text-dark);line-height:1.4;min-width:0; }
     .task-text.done { text-decoration:line-through;color:var(--text-soft); }
+    .task-text:empty::before { content:attr(data-ph);color:var(--text-soft);font-style:italic;pointer-events:none; }
     .task-tag {
       font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;
       padding:3px 9px;border-radius:20px;background:var(--bg);
@@ -382,38 +383,6 @@
     /* ────────────────────────────────────────────────────
        REFLECT PANEL
     ──────────────────────────────────────────────────── */
-    .reflect-header { padding:24px 4px 20px; }
-    .reflect-title  { font-size:22px;font-weight:300;color:var(--text-dark); }
-    .reflect-title em { font-style:italic;color:var(--lavender); }
-    .reflect-sub    { font-size:12px;color:var(--text-soft);margin-top:4px; }
-
-    .reflect-prompt {
-      padding:18px 20px;margin-bottom:16px;border-radius:var(--rc);
-      box-shadow:5px 5px 14px var(--sd),-5px -5px 14px var(--sl);
-    }
-    .prompt-text { font-size:14px;font-weight:300;font-style:italic;
-                   color:var(--text-dark);line-height:1.6;margin-bottom:14px; }
-    .reflect-textarea {
-      width:100%;background:transparent;border:none;outline:none;resize:none;
-      font-size:13.5px;font-weight:300;font-family:'DM Sans',sans-serif;
-      color:var(--text-dark);line-height:1.7;
-      border-bottom:1.5px solid rgba(180,160,140,.2);padding-bottom:4px;
-    }
-    .reflect-textarea::placeholder { color:var(--text-soft);font-style:italic; }
-
-    .mood-check-row { display:flex;gap:8px;margin-bottom:20px; }
-    .mood-chip {
-      flex:1;padding:10px 6px;border-radius:14px;
-      box-shadow:3px 3px 8px var(--sd),-3px -3px 8px var(--sl);
-      display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;
-      transition:box-shadow .2s;user-select:none;
-    }
-    .mood-chip.picked {
-      box-shadow:inset 3px 3px 7px var(--sd),inset -3px -3px 7px var(--sl);
-    }
-    .mood-chip-icon { font-size:18px; }
-    .mood-chip-lbl  { font-size:9px;font-weight:500;color:var(--text-soft);
-                      letter-spacing:.06em;text-transform:uppercase; }
 
     /* ────────────────────────────────────────────────────
        SETTINGS PANEL
@@ -566,22 +535,22 @@
             <div class="tasks-progress" id="taskProgress">1 / 3 done</div>
           </div>
           <div class="task-item">
-            <div class="checkbox checked" tabindex="0">
+            <div class="checkbox unchecked" tabindex="0">
               <svg viewBox="0 0 14 14" fill="none"><path d="M2.5 7L5.5 10L11.5 4" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </div>
-            <span class="task-text done" contenteditable="true" spellcheck="false">Morning journaling</span>
+            <span class="task-text" contenteditable="true" spellcheck="false" data-ph="Your first intention…"></span>
           </div>
           <div class="task-item">
             <div class="checkbox unchecked" tabindex="0">
               <svg viewBox="0 0 14 14" fill="none"><path d="M2.5 7L5.5 10L11.5 4" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </div>
-            <span class="task-text" contenteditable="true" spellcheck="false">Deep work: project proposal</span>
+            <span class="task-text" contenteditable="true" spellcheck="false" data-ph="Your second intention…"></span>
           </div>
           <div class="task-item">
             <div class="checkbox unchecked" tabindex="0">
               <svg viewBox="0 0 14 14" fill="none"><path d="M2.5 7L5.5 10L11.5 4" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
             </div>
-            <span class="task-text" contenteditable="true" spellcheck="false">30 min evening walk</span>
+            <span class="task-text" contenteditable="true" spellcheck="false" data-ph="Your third intention…"></span>
           </div>
         </div>
 
@@ -590,11 +559,11 @@
           <div class="lbl">Three Good Things Today</div>
           <div class="gratitude-item">
             <div class="gratitude-num">1</div>
-            <input class="gratitude-input" type="text" placeholder="Something you're grateful for…" value="The warmth of morning sunlight" />
+            <input class="gratitude-input" type="text" placeholder="Something you're grateful for…" />
           </div>
           <div class="gratitude-item">
             <div class="gratitude-num">2</div>
-            <input class="gratitude-input" type="text" placeholder="Something you're grateful for…" value="A perfect cup of coffee ☕" />
+            <input class="gratitude-input" type="text" placeholder="Something you're grateful for…" />
           </div>
           <div class="gratitude-item">
             <div class="gratitude-num">3</div>
@@ -606,11 +575,11 @@
         <div class="highlight-card" style="margin-bottom:20px;">
           <div class="highlight-header">
             <div>
-              <div class="highlight-title">One Small Win for the Day</div>
+              <div class="highlight-title">What Made Today Meaningful</div>
             </div>
           </div>
           <div class="highlight-input-area">
-            <textarea class="highlight-textarea" rows="2" placeholder="Write your win here…">Finished my journaling streak — 14 days in a row</textarea>
+            <textarea class="highlight-textarea" rows="2" placeholder="Write freely…"></textarea>
           </div>
         </div>
 
@@ -623,7 +592,7 @@
       <div class="scroll">
         <div class="trends-header">
           <div class="trends-title">Your <em>Trends</em></div>
-          <div class="trends-sub">Last 7 days · Week of Mar 2</div>
+          <div class="trends-sub" id="trendsSub">Last 7 days</div>
         </div>
 
         <!-- Streak cards -->
@@ -649,95 +618,19 @@
         <div class="neu" style="padding:20px;margin-bottom:20px;">
           <div class="lbl">Task Completion</div>
           <div class="week-grid">
-            <div class="week-days">
-              <div class="day-col"><div class="day-name">MON</div><div class="day-pip done">✓</div></div>
-              <div class="day-col"><div class="day-name">TUE</div><div class="day-pip done">✓</div></div>
-              <div class="day-col"><div class="day-name">WED</div><div class="day-pip done">✓</div></div>
-              <div class="day-col"><div class="day-name">THU</div><div class="day-pip done">✓</div></div>
-              <div class="day-col"><div class="day-name">FRI</div><div class="day-pip"></div></div>
-              <div class="day-col"><div class="day-name">SAT</div><div class="day-pip done">✓</div></div>
-              <div class="day-col"><div class="day-name">SUN</div><div class="day-pip today-pip">·</div></div>
-            </div>
+            <div class="week-days" id="weekDaysGrid"></div>
           </div>
         </div>
 
         <!-- Mood history -->
         <div class="neu" style="padding:20px;margin-bottom:20px;">
           <div class="lbl">Mood This Week</div>
-          <div class="mood-bar-row">
-            <div class="mood-bar-day">Mon</div>
-            <div class="mood-bar-track"><div class="mood-bar-fill" style="width:80%;background:linear-gradient(90deg,var(--mint),var(--sky));height:100%;border-radius:50px;"></div></div>
-            <div class="mood-bar-emoji">😊</div>
-          </div>
-          <div class="mood-bar-row">
-            <div class="mood-bar-day">Tue</div>
-            <div class="mood-bar-track"><div class="mood-bar-fill" style="width:60%;background:linear-gradient(90deg,var(--sky),var(--lavender));height:100%;border-radius:50px;"></div></div>
-            <div class="mood-bar-emoji">🌸</div>
-          </div>
-          <div class="mood-bar-row">
-            <div class="mood-bar-day">Wed</div>
-            <div class="mood-bar-track"><div class="mood-bar-fill" style="width:40%;background:linear-gradient(90deg,var(--peach),var(--sky));height:100%;border-radius:50px;"></div></div>
-            <div class="mood-bar-emoji">😐</div>
-          </div>
-          <div class="mood-bar-row">
-            <div class="mood-bar-day">Thu</div>
-            <div class="mood-bar-track"><div class="mood-bar-fill" style="width:90%;background:linear-gradient(90deg,var(--mint),var(--sky));height:100%;border-radius:50px;"></div></div>
-            <div class="mood-bar-emoji">✨</div>
-          </div>
-          <div class="mood-bar-row">
-            <div class="mood-bar-day">Fri</div>
-            <div class="mood-bar-track"><div class="mood-bar-fill" style="width:70%;background:linear-gradient(90deg,var(--peach),var(--mint));height:100%;border-radius:50px;"></div></div>
-            <div class="mood-bar-emoji">😊</div>
-          </div>
-          <div class="mood-bar-row">
-            <div class="mood-bar-day">Sat</div>
-            <div class="mood-bar-track"><div class="mood-bar-fill" style="width:75%;background:linear-gradient(90deg,var(--sky),var(--mint));height:100%;border-radius:50px;"></div></div>
-            <div class="mood-bar-emoji">🌸</div>
-          </div>
-          <div class="mood-bar-row">
-            <div class="mood-bar-day">Sun</div>
-            <div class="mood-bar-track"><div class="mood-bar-fill" style="width:65%;background:linear-gradient(90deg,var(--mint),var(--lavender));height:100%;border-radius:50px;"></div></div>
-            <div class="mood-bar-emoji">🌸</div>
-          </div>
+          <div id="moodBarsGrid"></div>
         </div>
 
       </div>
     </div><!-- end trends panel -->
 
-    <!-- ── REFLECT ── -->
-    <div class="panel" id="panel-reflect">
-      <div class="scroll">
-        <div class="reflect-header">
-          <div class="reflect-title">Evening <em>Reflect</em></div>
-          <div class="reflect-sub">A quiet space to process the day.</div>
-        </div>
-
-        <!-- Evening check-in mood -->
-        <div class="lbl">How did today feel?</div>
-        <div class="mood-check-row mb20">
-          <div class="mood-chip" data-rc="0"><div class="mood-chip-icon">😔</div><div class="mood-chip-lbl">Hard</div></div>
-          <div class="mood-chip" data-rc="1"><div class="mood-chip-icon">😐</div><div class="mood-chip-lbl">Meh</div></div>
-          <div class="mood-chip picked" data-rc="2"><div class="mood-chip-icon">🌸</div><div class="mood-chip-lbl">Nice</div></div>
-          <div class="mood-chip" data-rc="3"><div class="mood-chip-icon">😊</div><div class="mood-chip-lbl">Great</div></div>
-          <div class="mood-chip" data-rc="4"><div class="mood-chip-icon">✨</div><div class="mood-chip-lbl">Epic</div></div>
-        </div>
-
-        <!-- Prompts -->
-        <div class="reflect-prompt neu mb16">
-          <div class="prompt-text">"What made today meaningful?"</div>
-          <textarea class="reflect-textarea" rows="3" placeholder="Write freely…"></textarea>
-        </div>
-        <div class="reflect-prompt neu mb16">
-          <div class="prompt-text">"What would you do differently?"</div>
-          <textarea class="reflect-textarea" rows="3" placeholder="Write freely…"></textarea>
-        </div>
-        <div class="reflect-prompt neu mb20">
-          <div class="prompt-text">"One thing I want to carry into tomorrow…"</div>
-          <textarea class="reflect-textarea" rows="3" placeholder="Write freely…"></textarea>
-        </div>
-
-      </div>
-    </div><!-- end reflect panel -->
 
     <!-- ── SETTINGS ── -->
     <div class="panel" id="panel-settings">
@@ -830,10 +723,6 @@
       <div class="nav-icon-wrap">📊</div>
       <div class="nav-label">Trends</div>
     </div>
-    <div class="nav-item" data-panel="reflect">
-      <div class="nav-icon-wrap">🌙</div>
-      <div class="nav-label">Reflect</div>
-    </div>
     <div class="nav-item" data-panel="settings">
       <div class="nav-icon-wrap">⚙️</div>
       <div class="nav-label">Settings</div>
@@ -907,7 +796,7 @@ function syncTaskProgress() {
   const total = card.querySelectorAll('.checkbox').length;
   document.getElementById('taskProgress').textContent = `${done} / ${total} done`;
   document.getElementById('trendTasks').textContent = done;
-  // persist
+  // persist tasks
   const tasks = [];
   card.querySelectorAll('.task-item').forEach(item => {
     tasks.push({
@@ -915,7 +804,11 @@ function syncTaskProgress() {
       text:  item.querySelector('.task-text').textContent.trim(),
     });
   });
-  saveState({ tasks });
+  // persist per-day task history
+  const todayStr = new Date().toISOString().slice(0, 10);
+  const taskHistory = loadState().taskHistory || {};
+  taskHistory[todayStr] = done;
+  saveState({ tasks, taskHistory });
 }
 
 document.querySelectorAll('.checkbox').forEach((box, i) => {
@@ -977,14 +870,10 @@ function setMood(idx) {
   document.querySelectorAll('.mood-dot').forEach(d => d.classList.remove('selected'));
   document.querySelector(`.mood-dot[data-idx="${idx}"]`).classList.add('selected');
   document.getElementById('moodDesc').innerHTML = moodLabels[idx];
-  saveState({ mood: idx });
-  // update trends Sunday bar
-  const sunRow = document.querySelector('#panel-trends .mood-bar-row:last-child');
-  if (sunRow) {
-    sunRow.querySelector('.mood-bar-fill').style.width = moodWidths[idx];
-    sunRow.querySelector('.mood-bar-fill').style.background = moodGrads[idx];
-    sunRow.querySelector('.mood-bar-emoji').textContent = moodEmojis[idx];
-  }
+  const todayStr = new Date().toISOString().slice(0, 10);
+  const moodHistory = loadState().moodHistory || {};
+  moodHistory[todayStr] = idx;
+  saveState({ mood: idx, moodHistory });
 }
 
 document.querySelectorAll('.mood-dot').forEach(dot => {
@@ -994,19 +883,6 @@ document.querySelectorAll('.mood-dot').forEach(dot => {
 // restore mood
 if (typeof S.mood === 'number') setMood(S.mood);
 
-/* ═══════════════════════════════════════════════
-   REFLECT MOOD CHIPS
-═══════════════════════════════════════════════ */
-document.querySelectorAll('.mood-chip').forEach((chip, i) => {
-  if (typeof S.reflectMood === 'number' && S.reflectMood === i) chip.classList.add('picked');
-  else if (typeof S.reflectMood !== 'number' && i === 2) chip.classList.add('picked');
-
-  chip.addEventListener('click', () => {
-    document.querySelectorAll('.mood-chip').forEach(c => c.classList.remove('picked'));
-    chip.classList.add('picked');
-    saveState({ reflectMood: i });
-  });
-});
 
 /* ═══════════════════════════════════════════════
    GRATITUDE INPUTS — persist
@@ -1031,7 +907,7 @@ hlTA.addEventListener('input', () => saveState({ highlight: hlTA.value }));
    HYDRATION GLASSES
 ═══════════════════════════════════════════════ */
 let glassGoal   = S.glassGoal   !== undefined ? S.glassGoal   : 8;
-let glassCount  = S.glassCount  !== undefined ? S.glassCount  : 5;
+let glassCount  = S.glassCount  !== undefined ? S.glassCount  : 0;
 const glassGrid = document.getElementById('glassGrid');
 const glassCountEl  = document.getElementById('hydrationCount');
 const trendGlassEl  = document.getElementById('trendGlasses');
@@ -1237,25 +1113,74 @@ locationInput.addEventListener('blur', () => {
 // Auto-fetch weather on load with stored or default city
 fetchWeather((S.location || locationInput.value || 'San Francisco').trim());
 
-/* ═══════════════════════════════════════════════
-   REFLECT TEXTAREAS — persist
-═══════════════════════════════════════════════ */
-const reflectTAs = document.querySelectorAll('.reflect-textarea');
-reflectTAs.forEach((ta, i) => {
-  if (S.reflect && S.reflect[i]) ta.value = S.reflect[i];
-  ta.addEventListener('input', () => {
-    saveState({ reflect: [...reflectTAs].map(el => el.value) });
-  });
-});
 
 /* ═══════════════════════════════════════════════
    TRENDS — refresh from live state
 ═══════════════════════════════════════════════ */
 function refreshTrends() {
-  document.getElementById('trendTasks').textContent =
-    document.querySelectorAll('.tasks-card .checkbox.checked').length;
+  const st = loadState();
+  const taskHistory = st.taskHistory || {};
+  const moodHistory = st.moodHistory || {};
+
+  // Live stat cards
+  const doneTasks = document.querySelectorAll('.tasks-card .checkbox.checked').length;
+  document.getElementById('trendTasks').textContent = doneTasks;
   document.getElementById('trendGlasses').textContent = glassCount;
+
+  // Week label
+  const today = new Date();
+  const todayStr = today.toISOString().slice(0, 10);
+  const dow = today.getDay(); // 0=Sun
+  const monOffset = dow === 0 ? -6 : 1 - dow;
+  const monday = new Date(today);
+  monday.setDate(today.getDate() + monOffset);
+  document.getElementById('trendsSub').textContent =
+    `This week · ${monday.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}`;
+
+  // Week task completion grid
+  const DAY_NAMES = ['MON','TUE','WED','THU','FRI','SAT','SUN'];
+  const grid = document.getElementById('weekDaysGrid');
+  grid.innerHTML = '';
+  for (let d = 0; d < 7; d++) {
+    const date = new Date(monday);
+    date.setDate(monday.getDate() + d);
+    const dStr = date.toISOString().slice(0, 10);
+    const isToday = dStr === todayStr;
+    const isFuture = date > today && !isToday;
+    const tasksDone = isToday ? doneTasks : (taskHistory[dStr] || 0);
+    let pipClass = 'day-pip';
+    let pipContent = '';
+    if (!isFuture && tasksDone > 0) { pipClass += ' done'; pipContent = '✓'; }
+    else if (isToday && tasksDone === 0) { pipClass += ' today-pip'; pipContent = '·'; }
+    grid.innerHTML += `<div class="day-col"><div class="day-name">${DAY_NAMES[d]}</div><div class="${pipClass}">${pipContent}</div></div>`;
+  }
+
+  // Mood bars
+  const DAY_SHORT = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  const barsGrid = document.getElementById('moodBarsGrid');
+  barsGrid.innerHTML = '';
+  for (let d = 0; d < 7; d++) {
+    const date = new Date(monday);
+    date.setDate(monday.getDate() + d);
+    const dStr = date.toISOString().slice(0, 10);
+    const isFuture = date > today && dStr !== todayStr;
+    const mIdx = typeof moodHistory[dStr] === 'number' ? moodHistory[dStr] : null;
+    if (!isFuture && mIdx !== null) {
+      barsGrid.innerHTML += `<div class="mood-bar-row">
+        <div class="mood-bar-day">${DAY_SHORT[d]}</div>
+        <div class="mood-bar-track"><div class="mood-bar-fill" style="width:${moodWidths[mIdx]};background:${moodGrads[mIdx]};height:100%;border-radius:50px;"></div></div>
+        <div class="mood-bar-emoji">${moodEmojis[mIdx]}</div>
+      </div>`;
+    } else {
+      barsGrid.innerHTML += `<div class="mood-bar-row">
+        <div class="mood-bar-day">${DAY_SHORT[d]}</div>
+        <div class="mood-bar-track"></div>
+        <div class="mood-bar-emoji" style="opacity:0.25">–</div>
+      </div>`;
+    }
+  }
 }
+refreshTrends();
 
 /* ═══════════════════════════════════════════════
    BREATHING BUBBLE
