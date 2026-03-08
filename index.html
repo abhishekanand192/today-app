@@ -2,16 +2,34 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, viewport-fit=cover" />
   <title>Today — Your Daily Sanctuary</title>
   <meta name="description" content="A calm, intentional wellness companion for breathing, hydration, mood, tasks, and reflection." />
   <meta name="theme-color" content="#EBA882" />
+  <!-- PWA / iOS -->
   <meta name="apple-mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="apple-mobile-web-app-title" content="Today" />
+  <meta name="mobile-web-app-capable" content="yes" />
   <link rel="manifest" href="/manifest.json" />
-  <link rel="icon" href="/icons/icon.svg" type="image/svg+xml" />
-  <link rel="apple-touch-icon" href="/icons/icon.svg" />
+  <!-- Icons -->
+  <link rel="icon" href="/icons/icon-192.png" type="image/png" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/icons/icon-180.png" />
+  <link rel="apple-touch-icon" sizes="167x167" href="/icons/icon-167.png" />
+  <link rel="apple-touch-icon" sizes="152x152" href="/icons/icon-152.png" />
+  <!-- iOS Splash Screens -->
+  <link rel="apple-touch-startup-image"
+        media="screen and (device-width:430px) and (device-height:932px) and (-webkit-device-pixel-ratio:3) and (orientation:portrait)"
+        href="/icons/splash/splash-1290x2796.png" />
+  <link rel="apple-touch-startup-image"
+        media="screen and (device-width:393px) and (device-height:852px) and (-webkit-device-pixel-ratio:3) and (orientation:portrait)"
+        href="/icons/splash/splash-1179x2556.png" />
+  <link rel="apple-touch-startup-image"
+        media="screen and (device-width:390px) and (device-height:844px) and (-webkit-device-pixel-ratio:3) and (orientation:portrait)"
+        href="/icons/splash/splash-1170x2532.png" />
+  <link rel="apple-touch-startup-image"
+        media="screen and (device-width:375px) and (device-height:667px) and (-webkit-device-pixel-ratio:2) and (orientation:portrait)"
+        href="/icons/splash/splash-750x1334.png" />
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300;1,9..40,400&display=swap" rel="stylesheet" />
   <style>
     :root {
@@ -36,10 +54,13 @@
       font-family: 'DM Sans', sans-serif;
       background: var(--bg);
       min-height: 100vh;
+      min-height: 100dvh;
       display: flex;
       justify-content: center;
       align-items: flex-start;
       padding: 40px 16px 60px;
+      padding-top: max(40px, env(safe-area-inset-top));
+      padding-bottom: max(60px, env(safe-area-inset-bottom));
     }
 
     /* ── Phone shell ── */
