@@ -168,7 +168,7 @@
     /* ── Widget row ── */
     .widget-row { display:flex;gap:14px;margin-bottom:20px; }
 
-    /* Plant card */
+    /* Hydration card */
     .plant-card  { flex:1;padding:18px 16px 16px;display:flex;flex-direction:column;
                    align-items:center;gap:10px; }
     .plant-card .lbl { margin-bottom:0;text-align:center; }
@@ -176,11 +176,11 @@
 
     /* Hydration glasses */
     .glasses-grid {
-      display:grid;grid-template-columns:repeat(4,1fr);gap:5px;width:100%;
+      display:grid;grid-template-columns:repeat(4,1fr);gap:6px;width:100%;
     }
     .glass-btn {
       aspect-ratio:1;border-radius:8px;display:flex;align-items:center;
-      justify-content:center;font-size:16px;cursor:pointer;background:var(--bg);
+      justify-content:center;cursor:pointer;background:var(--bg);
       box-shadow: 3px 3px 7px var(--sd),-3px -3px 7px var(--sl);
       transition:box-shadow .2s,transform .15s;user-select:none;
       border:none;outline:none;
@@ -189,23 +189,32 @@
       box-shadow: inset 3px 3px 6px var(--sd),inset -3px -3px 6px var(--sl);
       transform:scale(.95);
     }
+    .glass-btn svg { pointer-events:none; }
     .hydration-count { font-size:11px;color:var(--text-soft);text-align:center; }
     .hydration-count strong { color:var(--mint-mid);font-weight:600; }
 
     /* Mood card */
-    .mood-card  { flex:1;padding:18px 14px 16px;display:flex;flex-direction:column;
+    .mood-card  { flex:1;padding:18px 16px 16px;display:flex;flex-direction:column;
                   align-items:center;gap:10px; }
-    .mood-icons { display:flex;justify-content:space-between;width:100%; }
+    .mood-icons { display:flex;flex-wrap:wrap;justify-content:center;gap:8px;width:100%; }
     .mood-dot   {
-      width:30px;height:30px;border-radius:50%;display:flex;align-items:center;
-      justify-content:center;font-size:15px;background:var(--bg);
+      width:34px;height:34px;border-radius:50%;display:flex;align-items:center;
+      justify-content:center;font-size:16px;
       box-shadow:3px 3px 8px var(--sd),-3px -3px 8px var(--sl);
       cursor:pointer;transition:box-shadow .2s,transform .15s;user-select:none;
     }
+    .mood-dot[data-idx="0"] { background:rgba(180,170,165,0.18); }
+    .mood-dot[data-idx="1"] { background:rgba(215,200,182,0.18); }
+    .mood-dot[data-idx="2"] { background:rgba(245,197,163,0.22); }
+    .mood-dot[data-idx="3"] { background:rgba(168,213,194,0.22); }
+    .mood-dot[data-idx="4"] { background:rgba(163,196,232,0.22); }
     .mood-dot.selected {
       box-shadow:inset 3px 3px 7px var(--sd),inset -3px -3px 7px var(--sl);
       transform:scale(.93);
     }
+    .mood-dot.selected[data-idx="2"] { background:rgba(245,197,163,0.42); }
+    .mood-dot.selected[data-idx="3"] { background:rgba(168,213,194,0.42); }
+    .mood-dot.selected[data-idx="4"] { background:rgba(163,196,232,0.42); }
     .mood-desc { font-size:11px;color:var(--text-soft);text-align:center;line-height:1.4; }
 
     /* ── Big 3 tasks ── */
@@ -1027,12 +1036,20 @@ const glassGrid = document.getElementById('glassGrid');
 const glassCountEl  = document.getElementById('hydrationCount');
 const trendGlassEl  = document.getElementById('trendGlasses');
 
+const SVG_EMPTY = `<svg viewBox="0 0 20 24" width="15" height="18" aria-hidden="true">
+  <path d="M3 2 L17 2 L15 22 L5 22 Z" fill="none" stroke="rgba(120,100,80,0.28)" stroke-width="1.5" stroke-linejoin="round"/>
+</svg>`;
+const SVG_FILLED = `<svg viewBox="0 0 20 24" width="15" height="18" aria-hidden="true">
+  <path d="M4 12 L16 12 L15 22 L5 22 Z" fill="rgba(163,196,232,0.5)"/>
+  <path d="M3 2 L17 2 L15 22 L5 22 Z" fill="none" stroke="rgba(100,140,170,0.5)" stroke-width="1.5" stroke-linejoin="round"/>
+</svg>`;
+
 function renderGlasses() {
   glassGrid.innerHTML = '';
   for (let i = 0; i < glassGoal; i++) {
     const btn = document.createElement('button');
     btn.className = 'glass-btn' + (i < glassCount ? ' filled' : '');
-    btn.textContent = i < glassCount ? '💧' : '🫙';
+    btn.innerHTML = i < glassCount ? SVG_FILLED : SVG_EMPTY;
     btn.setAttribute('aria-label', i < glassCount ? 'Remove glass' : 'Add glass');
     btn.addEventListener('click', () => {
       // tap filled glass → set count to i (remove this and above)
