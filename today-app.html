@@ -1,0 +1,1220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+  <title>Today — Your Daily Sanctuary</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300;1,9..40,400&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg:          #EEE8E0;
+      --peach:       #F5C5A3;
+      --peach-mid:   #EBA882;
+      --mint:        #A8D5C2;
+      --mint-mid:    #7EC4AB;
+      --sky:         #A3C4E8;
+      --sky-mid:     #7AAFD8;
+      --lavender:    #C9B8E8;
+      --text-dark:   #4A3F35;
+      --text-mid:    #7A6E65;
+      --text-soft:   #A89E95;
+      --sd:          rgba(180,160,140,0.45);
+      --sl:          rgba(255,255,255,0.85);
+      --rc:          28px;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      padding: 40px 16px 60px;
+    }
+
+    /* ── Phone shell ── */
+    .phone {
+      width: 390px;
+      height: 844px;
+      background: var(--bg);
+      border-radius: 52px;
+      box-shadow: 12px 12px 30px var(--sd), -8px -8px 24px var(--sl),
+                  inset 0 0 0 1px rgba(255,255,255,0.6);
+      overflow: hidden;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Ambient blobs ── */
+    .ambient { position: absolute; border-radius: 50%; pointer-events: none;
+               filter: blur(40px); opacity: 0.18; z-index: 0; }
+    .a1 { width:200px;height:200px;background:var(--peach);top:-60px;right:-50px; }
+    .a2 { width:180px;height:180px;background:var(--mint);top:280px;left:-60px; }
+    .a3 { width:160px;height:160px;background:var(--sky);bottom:200px;right:-40px; }
+
+    /* ── Status bar ── */
+    .status-bar {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 14px 32px 0; font-size: 12px; font-weight: 500;
+      color: var(--text-mid); position: relative; z-index: 1; flex-shrink: 0;
+    }
+    .status-bar .time { font-weight: 600; font-size: 15px; color: var(--text-dark); }
+    .status-icons { display: flex; gap: 6px; align-items: center; }
+
+    /* ── Panels ── */
+    .panels { flex: 1; overflow: hidden; position: relative; z-index: 1; }
+    .panel  { display: none; flex-direction: column; height: 100%; }
+    .panel.active { display: flex; }
+    .scroll { flex: 1; overflow-y: auto; padding: 0 22px 20px;
+              scrollbar-width: none; }
+    .scroll::-webkit-scrollbar { display: none; }
+
+    /* ── Neumorphic cards ── */
+    .neu {
+      background: var(--bg); border-radius: var(--rc);
+      box-shadow: 6px 6px 16px var(--sd), -6px -6px 16px var(--sl);
+    }
+
+    /* ── Section label ── */
+    .lbl {
+      font-size: 10.5px; font-weight: 600; letter-spacing: 0.14em;
+      text-transform: uppercase; color: var(--text-soft);
+      margin-bottom: 12px; padding-left: 2px;
+    }
+
+    /* ── Header ── */
+    .header {
+      padding: 20px 4px 16px;
+      display: flex; justify-content: space-between; align-items: flex-start;
+    }
+    .greeting-sub {
+      font-size: 12px; font-weight: 500; letter-spacing: 0.12em;
+      text-transform: uppercase; color: var(--text-soft); margin-bottom: 3px;
+    }
+    .greeting-main { font-size: 28px; font-weight: 300; color: var(--text-dark); line-height: 1.15; }
+    .greeting-main em { font-style: italic; font-weight: 400; color: var(--peach-mid); }
+    .greeting-date  { font-size: 12.5px; color: var(--text-soft); margin-top: 5px; }
+
+    .weather-pill {
+      display: flex; flex-direction: column; align-items: center; gap: 4px;
+      padding: 12px 16px; background: var(--bg); border-radius: 20px;
+      box-shadow: 5px 5px 12px var(--sd), -5px -5px 12px var(--sl);
+    }
+    .weather-icon { font-size: 22px; }
+    .weather-temp { font-size: 14px; font-weight: 600; color: var(--text-dark); line-height: 1; }
+    .weather-desc { font-size: 10px; color: var(--text-soft); }
+
+    /* ── Breathing bubble ── */
+    .bubble-section { display:flex;flex-direction:column;align-items:center;margin:6px 0 22px; }
+    .bubble-label   { font-size:11px;font-weight:500;letter-spacing:0.12em;
+                      text-transform:uppercase;color:var(--text-soft);margin-bottom:18px; }
+    .bubble-outer   {
+      width:210px;height:210px;border-radius:50%;
+      box-shadow: 8px 8px 22px var(--sd), -8px -8px 22px var(--sl);
+      display:flex;align-items:center;justify-content:center;position:relative;
+    }
+    .bubble-outer::before,.bubble-outer::after {
+      content:'';position:absolute;border-radius:50%;
+      border:1.5px solid rgba(163,196,232,0.3);animation:ripple 4s ease-in-out infinite;
+    }
+    .bubble-outer::before { width:190px;height:190px; }
+    .bubble-outer::after  { width:230px;height:230px;animation-delay:.8s; }
+    @keyframes ripple {
+      0%,100% { opacity:.15;transform:scale(.97); }
+      50%      { opacity:.45;transform:scale(1.03); }
+    }
+    .bubble-core {
+      width:172px;height:172px;border-radius:50%;cursor:pointer;
+      background:radial-gradient(circle at 38% 35%,
+        rgba(255,255,255,.75) 0%,rgba(163,196,232,.55) 35%,
+        rgba(168,213,194,.45) 65%,rgba(245,197,163,.35) 100%);
+      box-shadow: inset -6px -6px 18px rgba(255,255,255,.5),
+                  inset 4px 4px 12px rgba(163,196,232,.3),
+                  6px 6px 24px rgba(163,196,232,.35),
+                  -4px -4px 18px rgba(255,255,255,.8);
+      display:flex;flex-direction:column;align-items:center;justify-content:center;
+      animation:breathe 5s ease-in-out infinite;position:relative;overflow:hidden;
+      user-select:none;
+    }
+    .bubble-core::before {
+      content:'';position:absolute;top:18%;left:22%;
+      width:38%;height:28%;background:rgba(255,255,255,.55);
+      border-radius:50%;filter:blur(8px);
+    }
+    @keyframes breathe {
+      0%,100% { transform:scale(.92); }
+      50%      { transform:scale(1.06); }
+    }
+    .bubble-text  { font-size:12px;font-weight:500;letter-spacing:.1em;
+                    text-transform:uppercase;color:rgba(74,63,53,.6);
+                    position:relative;z-index:1;animation:bTxt 5s ease-in-out infinite; }
+    .bubble-count { font-size:28px;font-weight:300;color:rgba(74,63,53,.55);
+                    line-height:1;position:relative;z-index:1; }
+    @keyframes bTxt { 0%,40%{opacity:.7}50%{opacity:1}60%,100%{opacity:.7} }
+    .bubble-hint  { margin-top:16px;font-size:11.5px;color:var(--text-soft); }
+
+    /* ── Widget row ── */
+    .widget-row { display:flex;gap:14px;margin-bottom:20px; }
+
+    /* Plant card */
+    .plant-card  { flex:1;padding:18px 16px 16px;display:flex;flex-direction:column;
+                   align-items:center;gap:10px; }
+    .plant-card .lbl { margin-bottom:0;text-align:center; }
+    .plant-svg-wrap  { width:78px;height:78px;display:flex;align-items:flex-end;justify-content:center; }
+
+    /* Hydration glasses */
+    .glasses-grid {
+      display:grid;grid-template-columns:repeat(4,1fr);gap:5px;width:100%;
+    }
+    .glass-btn {
+      aspect-ratio:1;border-radius:8px;display:flex;align-items:center;
+      justify-content:center;font-size:16px;cursor:pointer;background:var(--bg);
+      box-shadow: 3px 3px 7px var(--sd),-3px -3px 7px var(--sl);
+      transition:box-shadow .2s,transform .15s;user-select:none;
+      border:none;outline:none;
+    }
+    .glass-btn.filled {
+      box-shadow: inset 3px 3px 6px var(--sd),inset -3px -3px 6px var(--sl);
+      transform:scale(.95);
+    }
+    .hydration-count { font-size:11px;color:var(--text-soft);text-align:center; }
+    .hydration-count strong { color:var(--mint-mid);font-weight:600; }
+
+    /* Mood card */
+    .mood-card  { flex:1;padding:18px 14px 16px;display:flex;flex-direction:column;
+                  align-items:center;gap:10px; }
+    .mood-icons { display:flex;gap:8px; }
+    .mood-dot   {
+      width:36px;height:36px;border-radius:50%;display:flex;align-items:center;
+      justify-content:center;font-size:17px;background:var(--bg);
+      box-shadow:3px 3px 8px var(--sd),-3px -3px 8px var(--sl);
+      cursor:pointer;transition:box-shadow .2s,transform .15s;user-select:none;
+    }
+    .mood-dot.selected {
+      box-shadow:inset 3px 3px 7px var(--sd),inset -3px -3px 7px var(--sl);
+      transform:scale(.93);
+    }
+    .mood-desc { font-size:11px;color:var(--text-soft);text-align:center;line-height:1.4; }
+
+    /* ── Big 3 tasks ── */
+    .tasks-card { padding:22px 20px;margin-bottom:20px; }
+    .tasks-header { display:flex;justify-content:space-between;align-items:center;margin-bottom:18px; }
+    .tasks-header .lbl { margin-bottom:0; }
+    .tasks-progress { font-size:11px;color:var(--mint-mid);font-weight:600;letter-spacing:.05em; }
+    .task-item {
+      display:flex;align-items:center;gap:14px;padding:12px 0;
+      border-bottom:1px solid rgba(180,160,140,.12);
+    }
+    .task-item:last-child  { border-bottom:none;padding-bottom:0; }
+    .task-item:first-child { padding-top:0; }
+    .checkbox {
+      width:26px;height:26px;border-radius:8px;flex-shrink:0;
+      display:flex;align-items:center;justify-content:center;
+      cursor:pointer;transition:box-shadow .25s,transform .15s;user-select:none;
+    }
+    .checkbox.unchecked { box-shadow:inset 3px 3px 7px var(--sd),inset -3px -3px 7px var(--sl); }
+    .checkbox.checked   {
+      background:linear-gradient(135deg,var(--mint) 0%,var(--sky) 100%);
+      box-shadow:3px 3px 8px var(--sd),-2px -2px 6px var(--sl);
+    }
+    .checkbox svg { width:14px;height:14px; }
+    .checkbox.unchecked svg { display:none; }
+    .task-text { flex:1;font-size:14.5px;font-weight:400;color:var(--text-dark);line-height:1.4; }
+    .task-text.done { text-decoration:line-through;color:var(--text-soft); }
+    .task-tag {
+      font-size:10px;font-weight:600;letter-spacing:.08em;text-transform:uppercase;
+      padding:3px 9px;border-radius:20px;background:var(--bg);
+      box-shadow:2px 2px 5px var(--sd),-2px -2px 5px var(--sl);
+    }
+    .tag-mint  { color:var(--mint-mid); }
+    .tag-peach { color:var(--peach-mid); }
+    .tag-sky   { color:var(--sky-mid); }
+
+    /* ── Gratitude ── */
+    .gratitude-card { padding:22px 20px;margin-bottom:20px;position:relative;overflow:hidden; }
+    .gratitude-card::before {
+      content:'"';position:absolute;top:-10px;right:16px;
+      font-size:100px;font-weight:300;color:rgba(245,197,163,.2);
+      line-height:1;pointer-events:none;
+    }
+    .gratitude-item { display:flex;align-items:center;gap:12px;padding:10px 0;
+                      border-bottom:1px solid rgba(180,160,140,.10); }
+    .gratitude-item:last-child  { border-bottom:none;padding-bottom:0; }
+    .gratitude-item:first-child { padding-top:0; }
+    .gratitude-num {
+      width:22px;height:22px;border-radius:50%;flex-shrink:0;
+      background:linear-gradient(135deg,var(--peach) 0%,var(--lavender) 100%);
+      display:flex;align-items:center;justify-content:center;
+      font-size:10px;font-weight:700;color:rgba(74,63,53,.75);
+      box-shadow:2px 2px 6px var(--sd),-2px -2px 6px var(--sl);
+    }
+    .gratitude-input {
+      flex:1;font-size:13.5px;font-weight:300;font-style:italic;
+      color:var(--text-dark);font-family:'DM Sans',sans-serif;
+      background:transparent;border:none;outline:none;
+      border-bottom:1.5px solid rgba(180,160,140,.2);
+      padding-bottom:2px;
+      transition:border-color .2s;
+      min-width:0;
+    }
+    .gratitude-input:focus { border-bottom-color:rgba(235,168,130,.5); }
+    .gratitude-input::placeholder { color:var(--text-soft); font-style:italic; }
+
+    /* ── Daily highlight ── */
+    .highlight-card {
+      padding:22px 20px 24px;
+      background:linear-gradient(135deg,rgba(245,197,163,.22) 0%,
+        rgba(168,213,194,.18) 50%,rgba(163,196,232,.22) 100%);
+      border-radius:var(--rc);
+      box-shadow:6px 6px 18px var(--sd),-6px -6px 18px var(--sl),
+                 inset 0 0 0 1px rgba(255,255,255,.55);
+      position:relative;overflow:hidden;
+    }
+    .highlight-card::after {
+      content:'';position:absolute;top:-20px;right:-20px;
+      width:100px;height:100px;border-radius:50%;
+      background:radial-gradient(circle,rgba(245,197,163,.3) 0%,transparent 70%);
+      pointer-events:none;
+    }
+    .highlight-header { display:flex;align-items:center;gap:10px;margin-bottom:14px; }
+    .highlight-title    { font-size:10.5px;font-weight:600;letter-spacing:.14em;
+                          text-transform:uppercase;color:var(--text-soft); }
+    .highlight-subtitle { font-size:11px;color:var(--peach-mid);font-weight:500; }
+    .highlight-input-area {
+      background:rgba(255,255,255,.35);border-radius:16px;padding:14px 16px;
+      border:1.5px solid rgba(255,255,255,.6);backdrop-filter:blur(6px);
+      box-shadow:inset 2px 2px 6px rgba(180,160,140,.15);
+    }
+    .highlight-textarea {
+      width:100%;background:transparent;border:none;outline:none;resize:none;
+      font-size:14px;font-style:italic;font-weight:300;font-family:'DM Sans',sans-serif;
+      color:var(--text-dark);line-height:1.6;min-height:52px;
+    }
+    .highlight-textarea::placeholder { color:var(--text-soft);font-style:italic; }
+
+    /* ── Bottom nav ── */
+    .bottom-nav {
+      display:flex;justify-content:space-around;align-items:center;
+      padding:14px 20px 26px;background:var(--bg);
+      border-top:1px solid rgba(255,255,255,.6);
+      box-shadow:0 -4px 20px rgba(180,160,140,.15);
+      flex-shrink:0;position:relative;z-index:2;
+    }
+    .nav-item  { display:flex;flex-direction:column;align-items:center;
+                 gap:5px;cursor:pointer;user-select:none; }
+    .nav-icon-wrap {
+      width:44px;height:44px;border-radius:14px;display:flex;
+      align-items:center;justify-content:center;font-size:20px;background:var(--bg);
+      box-shadow:3px 3px 8px var(--sd),-3px -3px 8px var(--sl);
+      transition:box-shadow .2s,background .2s;
+    }
+    .nav-icon-wrap.active {
+      box-shadow:inset 3px 3px 7px var(--sd),inset -3px -3px 7px var(--sl);
+      background:linear-gradient(135deg,var(--peach) 0%,var(--sky) 100%);
+    }
+    .nav-label { font-size:10px;font-weight:500;letter-spacing:.05em;color:var(--text-soft); }
+    .nav-item.active .nav-label { color:var(--peach-mid); }
+
+    /* ────────────────────────────────────────────────────
+       TRENDS PANEL
+    ──────────────────────────────────────────────────── */
+    .trends-header { padding:24px 4px 20px; }
+    .trends-title  { font-size:22px;font-weight:300;color:var(--text-dark); }
+    .trends-title em { font-style:italic;color:var(--sky-mid); }
+    .trends-sub    { font-size:12px;color:var(--text-soft);margin-top:4px; }
+
+    .streak-row { display:flex;gap:12px;margin-bottom:20px; }
+    .streak-card {
+      flex:1;padding:18px 14px;border-radius:20px;
+      box-shadow:5px 5px 14px var(--sd),-5px -5px 14px var(--sl);
+      display:flex;flex-direction:column;align-items:center;gap:6px;
+    }
+    .streak-num  { font-size:30px;font-weight:300;color:var(--text-dark);line-height:1; }
+    .streak-unit { font-size:10px;font-weight:600;letter-spacing:.1em;
+                   text-transform:uppercase;color:var(--text-soft); }
+    .streak-icon { font-size:20px; }
+
+    .week-grid { margin-bottom:20px; }
+    .week-days  { display:flex;gap:6px;justify-content:space-between; }
+    .day-col    { flex:1;display:flex;flex-direction:column;align-items:center;gap:6px; }
+    .day-name   { font-size:10px;font-weight:500;color:var(--text-soft);letter-spacing:.06em; }
+    .day-pip {
+      width:32px;height:32px;border-radius:10px;
+      box-shadow:3px 3px 7px var(--sd),-3px -3px 7px var(--sl);
+      display:flex;align-items:center;justify-content:center;font-size:13px;
+    }
+    .day-pip.done { background:linear-gradient(135deg,var(--mint),var(--sky)); }
+    .day-pip.today-pip { box-shadow:inset 3px 3px 6px var(--sd),inset -3px -3px 6px var(--sl); }
+
+    .mood-history { margin-bottom:20px; }
+    .mood-bar-row { display:flex;align-items:center;gap:10px;padding:8px 0;
+                    border-bottom:1px solid rgba(180,160,140,.1); }
+    .mood-bar-row:last-child { border-bottom:none; }
+    .mood-bar-day  { font-size:11px;color:var(--text-soft);width:24px;flex-shrink:0; }
+    .mood-bar-track {
+      flex:1;height:8px;border-radius:50px;
+      box-shadow:inset 2px 2px 5px var(--sd),inset -2px -2px 5px var(--sl);
+    }
+    .mood-bar-fill { height:100%;border-radius:50px; }
+    .mood-bar-emoji { font-size:14px; }
+
+    /* ────────────────────────────────────────────────────
+       REFLECT PANEL
+    ──────────────────────────────────────────────────── */
+    .reflect-header { padding:24px 4px 20px; }
+    .reflect-title  { font-size:22px;font-weight:300;color:var(--text-dark); }
+    .reflect-title em { font-style:italic;color:var(--lavender); }
+    .reflect-sub    { font-size:12px;color:var(--text-soft);margin-top:4px; }
+
+    .reflect-prompt {
+      padding:18px 20px;margin-bottom:16px;border-radius:var(--rc);
+      box-shadow:5px 5px 14px var(--sd),-5px -5px 14px var(--sl);
+    }
+    .prompt-text { font-size:14px;font-weight:300;font-style:italic;
+                   color:var(--text-dark);line-height:1.6;margin-bottom:14px; }
+    .reflect-textarea {
+      width:100%;background:transparent;border:none;outline:none;resize:none;
+      font-size:13.5px;font-weight:300;font-family:'DM Sans',sans-serif;
+      color:var(--text-dark);line-height:1.7;
+      border-bottom:1.5px solid rgba(180,160,140,.2);padding-bottom:4px;
+    }
+    .reflect-textarea::placeholder { color:var(--text-soft);font-style:italic; }
+
+    .mood-check-row { display:flex;gap:8px;margin-bottom:20px; }
+    .mood-chip {
+      flex:1;padding:10px 6px;border-radius:14px;
+      box-shadow:3px 3px 8px var(--sd),-3px -3px 8px var(--sl);
+      display:flex;flex-direction:column;align-items:center;gap:5px;cursor:pointer;
+      transition:box-shadow .2s;user-select:none;
+    }
+    .mood-chip.picked {
+      box-shadow:inset 3px 3px 7px var(--sd),inset -3px -3px 7px var(--sl);
+    }
+    .mood-chip-icon { font-size:18px; }
+    .mood-chip-lbl  { font-size:9px;font-weight:500;color:var(--text-soft);
+                      letter-spacing:.06em;text-transform:uppercase; }
+
+    /* ────────────────────────────────────────────────────
+       SETTINGS PANEL
+    ──────────────────────────────────────────────────── */
+    .settings-header { padding:24px 4px 20px; }
+    .settings-title  { font-size:22px;font-weight:300;color:var(--text-dark); }
+    .settings-title em { font-style:italic;color:var(--peach-mid); }
+
+    .settings-card { padding:20px;margin-bottom:16px;border-radius:var(--rc);
+                     box-shadow:5px 5px 14px var(--sd),-5px -5px 14px var(--sl); }
+    .settings-row  { display:flex;align-items:center;justify-content:space-between;
+                     padding:10px 0;border-bottom:1px solid rgba(180,160,140,.1); }
+    .settings-row:last-child { border-bottom:none;padding-bottom:0; }
+    .settings-row:first-child { padding-top:0; }
+    .s-label { font-size:13.5px;font-weight:400;color:var(--text-dark); }
+    .s-sub   { font-size:11px;color:var(--text-soft);margin-top:2px; }
+    .s-input {
+      background:transparent;border:none;outline:none;
+      font-size:13.5px;font-weight:400;font-family:'DM Sans',sans-serif;
+      color:var(--text-dark);text-align:right;width:120px;
+      border-bottom:1.5px solid rgba(180,160,140,.2);
+    }
+    .s-input:focus { border-bottom-color:rgba(235,168,130,.5); }
+
+    /* Toggle */
+    .toggle { position:relative;width:42px;height:24px;flex-shrink:0; }
+    .toggle input { opacity:0;width:0;height:0; }
+    .toggle-track {
+      position:absolute;inset:0;border-radius:50px;cursor:pointer;
+      background:var(--bg);box-shadow:inset 3px 3px 6px var(--sd),inset -3px -3px 6px var(--sl);
+      transition:background .3s;
+    }
+    .toggle-thumb {
+      position:absolute;top:4px;left:4px;width:16px;height:16px;border-radius:50%;
+      background:var(--text-soft);
+      box-shadow:2px 2px 5px var(--sd),-1px -1px 4px var(--sl);
+      transition:transform .3s,background .3s;
+    }
+    .toggle input:checked + .toggle-track { background:linear-gradient(135deg,var(--mint),var(--sky)); }
+    .toggle input:checked ~ .toggle-thumb { transform:translateX(18px);background:#fff; }
+
+    .s-select {
+      background:var(--bg);border:none;outline:none;
+      font-size:12px;font-family:'DM Sans',sans-serif;color:var(--text-mid);
+      border-radius:10px;padding:4px 8px;
+      box-shadow:2px 2px 5px var(--sd),-2px -2px 5px var(--sl);
+      cursor:pointer;
+    }
+
+    .version-note { text-align:center;font-size:11px;color:var(--text-soft);
+                    padding:10px 0 4px;letter-spacing:.05em; }
+
+    /* ── utils ── */
+    .mb16 { margin-bottom:16px; }
+    .mb20 { margin-bottom:20px; }
+
+    .reduce-motion * { animation-play-state: paused !important; transition: none !important; }
+    .task-text[contenteditable]:focus { outline: none; border-bottom: 1.5px solid rgba(235,168,130,0.4); }
+    .task-text[contenteditable] { cursor: text; }
+  </style>
+</head>
+<body>
+<div class="phone">
+
+  <!-- Ambient blobs -->
+  <div class="ambient a1"></div>
+  <div class="ambient a2"></div>
+  <div class="ambient a3"></div>
+
+  <!-- Status bar -->
+  <div class="status-bar">
+    <span class="time" id="clockTime">9:41</span>
+    <div class="status-icons">
+      <svg width="16" height="12" viewBox="0 0 16 12" fill="none">
+        <rect x="0" y="8" width="3" height="4" rx="1" fill="#7A6E65"/>
+        <rect x="4.5" y="5.5" width="3" height="6.5" rx="1" fill="#7A6E65"/>
+        <rect x="9" y="2.5" width="3" height="9.5" rx="1" fill="#7A6E65"/>
+        <rect x="13.5" y="0" width="3" height="12" rx="1" fill="#7A6E65" opacity=".4"/>
+      </svg>
+      <svg width="16" height="12" viewBox="0 0 16 12" fill="none">
+        <path d="M8 9.5a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3z" fill="#7A6E65"/>
+        <path d="M3.5 6.5C5 5 6.4 4.3 8 4.3s3 .7 4.5 2.2" stroke="#7A6E65" stroke-width="1.4" stroke-linecap="round" fill="none"/>
+        <path d="M1 4C3.3 1.7 5.5.8 8 .8s4.7.9 7 3.2" stroke="#7A6E65" stroke-width="1.4" stroke-linecap="round" fill="none" opacity=".45"/>
+      </svg>
+      <svg width="24" height="12" viewBox="0 0 24 12" fill="none">
+        <rect x=".5" y=".5" width="20" height="11" rx="3" stroke="#7A6E65" stroke-width="1"/>
+        <rect x="2" y="2" width="15" height="8" rx="2" fill="#7A6E65"/>
+        <path d="M21.5 4v4a2 2 0 0 0 0-4z" fill="#7A6E65" opacity=".5"/>
+      </svg>
+    </div>
+  </div>
+
+  <!-- ════════════════ PANELS ════════════════ -->
+  <div class="panels">
+
+    <!-- ── TODAY ── -->
+    <div class="panel active" id="panel-today">
+      <div class="scroll">
+
+        <!-- Header -->
+        <div class="header">
+          <div>
+            <div class="greeting-sub">Sunday · March 8</div>
+            <div class="greeting-main">Good <em>Morning,</em><br>Abhishek ✦</div>
+            <div class="greeting-date">You have 3 intentions today.</div>
+          </div>
+          <div class="weather-pill">
+            <div class="weather-icon">🌤️</div>
+            <div class="weather-temp">72°F</div>
+            <div class="weather-desc">Partly Sunny</div>
+          </div>
+        </div>
+
+        <!-- Breathing Bubble -->
+        <div class="bubble-section">
+          <div class="bubble-label">· Take a breath ·</div>
+          <div class="bubble-outer">
+            <div class="bubble-core" id="bubbleCore">
+              <div class="bubble-text" id="bubbleTxt">Inhale</div>
+              <div class="bubble-count" id="bubbleCount">4</div>
+            </div>
+          </div>
+          <div class="bubble-hint" id="bubbleHint">Tap to start a guided session</div>
+        </div>
+
+        <!-- Hydration + Mood -->
+        <div class="widget-row">
+
+          <!-- Hydration Plant -->
+          <div class="neu plant-card">
+            <div class="lbl">Hydration</div>
+            <div class="plant-svg-wrap">
+              <svg width="80" height="82" viewBox="0 0 80 82" fill="none">
+                <path d="M24 62 L28 78 Q40 82 52 78 L56 62 Z" fill="#EBA882" stroke="rgba(180,120,80,.35)" stroke-width="1.2" stroke-linejoin="round"/>
+                <ellipse cx="40" cy="62" rx="16" ry="5" fill="#F5C5A3" stroke="rgba(180,120,80,.3)" stroke-width="1"/>
+                <path d="M27 65 Q40 68 53 65" stroke="rgba(120,80,50,.2)" stroke-width="1.5" stroke-linecap="round" fill="none"/>
+                <path d="M40 61 C40 52,39 42,40 30" stroke="#7EC4AB" stroke-width="2.2" stroke-linecap="round" fill="none"/>
+                <path d="M40 48 C36 44,26 43,24 36 C26 38,34 38,40 42" fill="rgba(126,196,171,.75)" stroke="#7EC4AB" stroke-width="1" stroke-linejoin="round"/>
+                <path d="M40 40 C44 36,54 35,56 28 C54 30,46 31,40 36" fill="rgba(126,196,171,.7)" stroke="#7EC4AB" stroke-width="1" stroke-linejoin="round"/>
+                <path d="M40 30 C37 24,35 18,38 12 C40 17,42 22,40 30" fill="rgba(126,196,171,.65)" stroke="#7EC4AB" stroke-width="1" stroke-linejoin="round"/>
+                <circle cx="36" cy="70" r="1.2" fill="rgba(120,80,50,.3)"/>
+                <circle cx="44" cy="70" r="1.2" fill="rgba(120,80,50,.3)"/>
+                <path d="M36 73 Q40 76 44 73" stroke="rgba(120,80,50,.3)" stroke-width="1.2" stroke-linecap="round" fill="none"/>
+                <path d="M58 20 C58 16,63 14,63 20 C63 23,58 24,58 20" fill="rgba(163,196,232,.6)" stroke="rgba(122,175,216,.5)" stroke-width=".8"/>
+              </svg>
+            </div>
+            <!-- Tappable glasses -->
+            <div class="glasses-grid" id="glassGrid">
+              <!-- generated by JS -->
+            </div>
+            <div class="hydration-count" id="hydrationCount"><strong>5</strong> of 8 glasses</div>
+          </div>
+
+          <!-- Mood -->
+          <div class="neu mood-card">
+            <div class="lbl">Vibe Check</div>
+            <div class="mood-icons">
+              <div class="mood-dot" data-idx="0">😔</div>
+              <div class="mood-dot" data-idx="1">😐</div>
+              <div class="mood-dot selected" data-idx="2">🌸</div>
+            </div>
+            <div class="mood-icons">
+              <div class="mood-dot" data-idx="3">😊</div>
+              <div class="mood-dot" data-idx="4">✨</div>
+            </div>
+            <div class="mood-desc" id="moodDesc">Feeling blooming<br>today ☀️</div>
+          </div>
+        </div>
+
+        <!-- Big 3 -->
+        <div class="neu tasks-card mb20">
+          <div class="tasks-header">
+            <div class="lbl">The Big 3</div>
+            <div class="tasks-progress" id="taskProgress">1 / 3 done</div>
+          </div>
+          <div class="task-item">
+            <div class="checkbox checked" tabindex="0">
+              <svg viewBox="0 0 14 14" fill="none"><path d="M2.5 7L5.5 10L11.5 4" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <span class="task-text done" contenteditable="true" spellcheck="false">Morning journaling</span>
+            <span class="task-tag tag-mint">Self</span>
+          </div>
+          <div class="task-item">
+            <div class="checkbox unchecked" tabindex="0">
+              <svg viewBox="0 0 14 14" fill="none"><path d="M2.5 7L5.5 10L11.5 4" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <span class="task-text" contenteditable="true" spellcheck="false">Deep work: project proposal</span>
+            <span class="task-tag tag-sky">Work</span>
+          </div>
+          <div class="task-item">
+            <div class="checkbox unchecked" tabindex="0">
+              <svg viewBox="0 0 14 14" fill="none"><path d="M2.5 7L5.5 10L11.5 4" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <span class="task-text" contenteditable="true" spellcheck="false">30 min evening walk</span>
+            <span class="task-tag tag-peach">Body</span>
+          </div>
+        </div>
+
+        <!-- Gratitude -->
+        <div class="neu gratitude-card mb20">
+          <div class="lbl">Three Good Things</div>
+          <div class="gratitude-item">
+            <div class="gratitude-num">1</div>
+            <input class="gratitude-input" type="text" placeholder="Something you're grateful for…" value="The warmth of morning sunlight" />
+          </div>
+          <div class="gratitude-item">
+            <div class="gratitude-num">2</div>
+            <input class="gratitude-input" type="text" placeholder="Something you're grateful for…" value="A perfect cup of coffee ☕" />
+          </div>
+          <div class="gratitude-item">
+            <div class="gratitude-num">3</div>
+            <input class="gratitude-input" type="text" placeholder="Something you're grateful for…" />
+          </div>
+        </div>
+
+        <!-- Daily Highlight -->
+        <div class="highlight-card">
+          <div class="highlight-header">
+            <div>
+              <div class="highlight-title">One Win of the Day</div>
+              <div class="highlight-subtitle">Make it count.</div>
+            </div>
+          </div>
+          <div class="highlight-input-area">
+            <textarea class="highlight-textarea" rows="2" placeholder="Write your win here…">Finished my journaling streak — 14 days in a row</textarea>
+          </div>
+        </div>
+
+      </div>
+    </div><!-- end today panel -->
+
+    <!-- ── TRENDS ── -->
+    <div class="panel" id="panel-trends">
+      <div class="scroll">
+        <div class="trends-header">
+          <div class="trends-title">Your <em>Trends</em></div>
+          <div class="trends-sub">Last 7 days · Week of Mar 2</div>
+        </div>
+
+        <!-- Streak cards -->
+        <div class="streak-row mb20">
+          <div class="streak-card">
+            <div class="streak-icon">🔥</div>
+            <div class="streak-num">14</div>
+            <div class="streak-unit">Day Streak</div>
+          </div>
+          <div class="streak-card">
+            <div class="streak-icon">💧</div>
+            <div class="streak-num" id="trendGlasses">5</div>
+            <div class="streak-unit">Glasses Today</div>
+          </div>
+          <div class="streak-card">
+            <div class="streak-icon">✅</div>
+            <div class="streak-num" id="trendTasks">1</div>
+            <div class="streak-unit">Tasks Done</div>
+          </div>
+        </div>
+
+        <!-- Weekly task completion -->
+        <div class="neu" style="padding:20px;margin-bottom:20px;">
+          <div class="lbl">Task Completion</div>
+          <div class="week-grid">
+            <div class="week-days">
+              <div class="day-col"><div class="day-name">MON</div><div class="day-pip done">✓</div></div>
+              <div class="day-col"><div class="day-name">TUE</div><div class="day-pip done">✓</div></div>
+              <div class="day-col"><div class="day-name">WED</div><div class="day-pip done">✓</div></div>
+              <div class="day-col"><div class="day-name">THU</div><div class="day-pip done">✓</div></div>
+              <div class="day-col"><div class="day-name">FRI</div><div class="day-pip"></div></div>
+              <div class="day-col"><div class="day-name">SAT</div><div class="day-pip done">✓</div></div>
+              <div class="day-col"><div class="day-name">SUN</div><div class="day-pip today-pip">·</div></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Mood history -->
+        <div class="neu" style="padding:20px;margin-bottom:20px;">
+          <div class="lbl">Mood This Week</div>
+          <div class="mood-bar-row">
+            <div class="mood-bar-day">Mon</div>
+            <div class="mood-bar-track"><div class="mood-bar-fill" style="width:80%;background:linear-gradient(90deg,var(--mint),var(--sky));height:100%;border-radius:50px;"></div></div>
+            <div class="mood-bar-emoji">😊</div>
+          </div>
+          <div class="mood-bar-row">
+            <div class="mood-bar-day">Tue</div>
+            <div class="mood-bar-track"><div class="mood-bar-fill" style="width:60%;background:linear-gradient(90deg,var(--sky),var(--lavender));height:100%;border-radius:50px;"></div></div>
+            <div class="mood-bar-emoji">🌸</div>
+          </div>
+          <div class="mood-bar-row">
+            <div class="mood-bar-day">Wed</div>
+            <div class="mood-bar-track"><div class="mood-bar-fill" style="width:40%;background:linear-gradient(90deg,var(--peach),var(--sky));height:100%;border-radius:50px;"></div></div>
+            <div class="mood-bar-emoji">😐</div>
+          </div>
+          <div class="mood-bar-row">
+            <div class="mood-bar-day">Thu</div>
+            <div class="mood-bar-track"><div class="mood-bar-fill" style="width:90%;background:linear-gradient(90deg,var(--mint),var(--sky));height:100%;border-radius:50px;"></div></div>
+            <div class="mood-bar-emoji">✨</div>
+          </div>
+          <div class="mood-bar-row">
+            <div class="mood-bar-day">Fri</div>
+            <div class="mood-bar-track"><div class="mood-bar-fill" style="width:70%;background:linear-gradient(90deg,var(--peach),var(--mint));height:100%;border-radius:50px;"></div></div>
+            <div class="mood-bar-emoji">😊</div>
+          </div>
+          <div class="mood-bar-row">
+            <div class="mood-bar-day">Sat</div>
+            <div class="mood-bar-track"><div class="mood-bar-fill" style="width:75%;background:linear-gradient(90deg,var(--sky),var(--mint));height:100%;border-radius:50px;"></div></div>
+            <div class="mood-bar-emoji">🌸</div>
+          </div>
+          <div class="mood-bar-row">
+            <div class="mood-bar-day">Sun</div>
+            <div class="mood-bar-track"><div class="mood-bar-fill" style="width:65%;background:linear-gradient(90deg,var(--mint),var(--lavender));height:100%;border-radius:50px;"></div></div>
+            <div class="mood-bar-emoji">🌸</div>
+          </div>
+        </div>
+
+      </div>
+    </div><!-- end trends panel -->
+
+    <!-- ── REFLECT ── -->
+    <div class="panel" id="panel-reflect">
+      <div class="scroll">
+        <div class="reflect-header">
+          <div class="reflect-title">Evening <em>Reflect</em></div>
+          <div class="reflect-sub">A quiet space to process the day.</div>
+        </div>
+
+        <!-- Evening check-in mood -->
+        <div class="lbl">How did today feel?</div>
+        <div class="mood-check-row mb20">
+          <div class="mood-chip" data-rc="0"><div class="mood-chip-icon">😔</div><div class="mood-chip-lbl">Hard</div></div>
+          <div class="mood-chip" data-rc="1"><div class="mood-chip-icon">😐</div><div class="mood-chip-lbl">Meh</div></div>
+          <div class="mood-chip picked" data-rc="2"><div class="mood-chip-icon">🌸</div><div class="mood-chip-lbl">Nice</div></div>
+          <div class="mood-chip" data-rc="3"><div class="mood-chip-icon">😊</div><div class="mood-chip-lbl">Great</div></div>
+          <div class="mood-chip" data-rc="4"><div class="mood-chip-icon">✨</div><div class="mood-chip-lbl">Epic</div></div>
+        </div>
+
+        <!-- Prompts -->
+        <div class="reflect-prompt neu mb16">
+          <div class="prompt-text">"What made today meaningful?"</div>
+          <textarea class="reflect-textarea" rows="3" placeholder="Write freely…"></textarea>
+        </div>
+        <div class="reflect-prompt neu mb16">
+          <div class="prompt-text">"What would you do differently?"</div>
+          <textarea class="reflect-textarea" rows="3" placeholder="Write freely…"></textarea>
+        </div>
+        <div class="reflect-prompt neu mb20">
+          <div class="prompt-text">"One thing I want to carry into tomorrow…"</div>
+          <textarea class="reflect-textarea" rows="3" placeholder="Write freely…"></textarea>
+        </div>
+
+      </div>
+    </div><!-- end reflect panel -->
+
+    <!-- ── SETTINGS ── -->
+    <div class="panel" id="panel-settings">
+      <div class="scroll">
+        <div class="settings-header">
+          <div class="settings-title">Your <em>Settings</em></div>
+        </div>
+
+        <!-- Profile -->
+        <div class="settings-card mb16">
+          <div class="lbl">Profile</div>
+          <div class="settings-row">
+            <div><div class="s-label">Name</div></div>
+            <input class="s-input" type="text" value="Abhishek" />
+          </div>
+          <div class="settings-row">
+            <div><div class="s-label">Daily glasses goal</div></div>
+            <input class="s-input" type="number" value="8" min="1" max="20" style="width:48px;text-align:right;" id="glassGoalInput"/>
+          </div>
+          <div class="settings-row">
+            <div><div class="s-label">Location</div></div>
+            <input class="s-input" type="text" value="San Francisco" />
+          </div>
+        </div>
+
+        <!-- Notifications -->
+        <div class="settings-card mb16">
+          <div class="lbl">Notifications</div>
+          <div class="settings-row">
+            <div><div class="s-label">Morning reminder</div><div class="s-sub">Daily at 8:00 AM</div></div>
+            <label class="toggle">
+              <input type="checkbox" checked />
+              <div class="toggle-track"></div>
+              <div class="toggle-thumb"></div>
+            </label>
+          </div>
+          <div class="settings-row">
+            <div><div class="s-label">Hydration nudges</div><div class="s-sub">Every 2 hours</div></div>
+            <label class="toggle">
+              <input type="checkbox" checked />
+              <div class="toggle-track"></div>
+              <div class="toggle-thumb"></div>
+            </label>
+          </div>
+          <div class="settings-row">
+            <div><div class="s-label">Evening reflection</div><div class="s-sub">Daily at 9:00 PM</div></div>
+            <label class="toggle">
+              <input type="checkbox" />
+              <div class="toggle-track"></div>
+              <div class="toggle-thumb"></div>
+            </label>
+          </div>
+        </div>
+
+        <!-- Appearance -->
+        <div class="settings-card mb16">
+          <div class="lbl">Appearance</div>
+          <div class="settings-row">
+            <div><div class="s-label">Theme</div></div>
+            <select class="s-select">
+              <option>Warm Peach</option>
+              <option>Ocean Mint</option>
+              <option>Lavender Dream</option>
+            </select>
+          </div>
+          <div class="settings-row">
+            <div><div class="s-label">Reduce motion</div></div>
+            <label class="toggle">
+              <input type="checkbox" />
+              <div class="toggle-track"></div>
+              <div class="toggle-thumb"></div>
+            </label>
+          </div>
+        </div>
+
+        <div class="version-note">Today · Version 1.0 · Made with intention ✦</div>
+
+      </div>
+    </div><!-- end settings panel -->
+
+  </div><!-- end panels -->
+
+  <!-- ── Bottom Nav ── -->
+  <div class="bottom-nav">
+    <div class="nav-item active" data-panel="today">
+      <div class="nav-icon-wrap active">🏠</div>
+      <div class="nav-label">Today</div>
+    </div>
+    <div class="nav-item" data-panel="trends">
+      <div class="nav-icon-wrap">📊</div>
+      <div class="nav-label">Trends</div>
+    </div>
+    <div class="nav-item" data-panel="reflect">
+      <div class="nav-icon-wrap">🌙</div>
+      <div class="nav-label">Reflect</div>
+    </div>
+    <div class="nav-item" data-panel="settings">
+      <div class="nav-icon-wrap">⚙️</div>
+      <div class="nav-label">Settings</div>
+    </div>
+  </div>
+
+</div><!-- end phone -->
+
+<script>
+/* ═══════════════════════════════════════════════
+   STATE — persisted to localStorage
+═══════════════════════════════════════════════ */
+const STORE_KEY = 'today-app-v1';
+function loadState() {
+  try { return JSON.parse(localStorage.getItem(STORE_KEY)) || {}; } catch { return {}; }
+}
+function saveState(patch) {
+  const s = loadState();
+  Object.assign(s, patch);
+  localStorage.setItem(STORE_KEY, JSON.stringify(s));
+}
+const S = loadState();
+
+/* ═══════════════════════════════════════════════
+   LIVE CLOCK
+═══════════════════════════════════════════════ */
+function updateClock() {
+  const now = new Date();
+  let h = now.getHours(), m = now.getMinutes();
+  const ampm = h >= 12 ? 'PM' : 'AM';
+  h = h % 12 || 12;
+  document.getElementById('clockTime').textContent = `${h}:${String(m).padStart(2,'0')}`;
+}
+updateClock();
+setInterval(updateClock, 10000);
+
+/* Dynamic greeting */
+function updateGreeting() {
+  const h = new Date().getHours();
+  const part = h < 12 ? 'Morning' : h < 17 ? 'Afternoon' : 'Evening';
+  const name = S.name || 'Abhishek';
+  const el = document.querySelector('.greeting-main');
+  el.innerHTML = `Good <em>${part},</em><br>${name} ✦`;
+}
+updateGreeting();
+
+/* ═══════════════════════════════════════════════
+   NAV SWITCHING
+═══════════════════════════════════════════════ */
+document.querySelectorAll('.nav-item').forEach(item => {
+  item.addEventListener('click', () => {
+    const target = item.dataset.panel;
+    document.querySelectorAll('.nav-item').forEach(n => {
+      n.classList.remove('active');
+      n.querySelector('.nav-icon-wrap').classList.remove('active');
+    });
+    item.classList.add('active');
+    item.querySelector('.nav-icon-wrap').classList.add('active');
+    document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('panel-' + target).classList.add('active');
+    if (target === 'trends') refreshTrends();
+  });
+});
+
+/* ═══════════════════════════════════════════════
+   CHECKBOXES
+═══════════════════════════════════════════════ */
+function syncTaskProgress() {
+  const card  = document.querySelector('.tasks-card');
+  const done  = card.querySelectorAll('.checkbox.checked').length;
+  const total = card.querySelectorAll('.checkbox').length;
+  document.getElementById('taskProgress').textContent = `${done} / ${total} done`;
+  document.getElementById('trendTasks').textContent = done;
+  // persist
+  const tasks = [];
+  card.querySelectorAll('.task-item').forEach(item => {
+    tasks.push({
+      done:  item.querySelector('.checkbox').classList.contains('checked'),
+      text:  item.querySelector('.task-text').textContent.trim(),
+    });
+  });
+  saveState({ tasks });
+}
+
+document.querySelectorAll('.checkbox').forEach((box, i) => {
+  // restore state
+  if (S.tasks && S.tasks[i]) {
+    const t = S.tasks[i];
+    if (t.done) {
+      box.classList.replace('unchecked', 'checked');
+      box.nextElementSibling.classList.add('done');
+    } else {
+      box.classList.replace('checked', 'unchecked');
+      box.nextElementSibling.classList.remove('done');
+    }
+    box.nextElementSibling.textContent = t.text;
+  }
+
+  const toggle = () => {
+    const checked = box.classList.contains('checked');
+    box.classList.toggle('checked', !checked);
+    box.classList.toggle('unchecked', checked);
+    box.nextElementSibling.classList.toggle('done', !checked);
+    syncTaskProgress();
+  };
+  box.addEventListener('click', toggle);
+  box.addEventListener('keydown', e => {
+    if (e.key === ' ' || e.key === 'Enter') { e.preventDefault(); toggle(); }
+  });
+});
+
+// Task text editing — persist on blur
+document.querySelectorAll('.task-text').forEach(el => {
+  el.addEventListener('blur', () => syncTaskProgress());
+  el.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); el.blur(); } });
+});
+
+syncTaskProgress();
+
+/* ═══════════════════════════════════════════════
+   MOOD DOTS (Today)
+═══════════════════════════════════════════════ */
+const moodLabels = [
+  'Feeling low today 🌧️',
+  'Just okay 😶',
+  'Feeling blooming<br>today ☀️',
+  'Happy & grateful 😊',
+  'On top of the world ✨'
+];
+const moodEmojis   = ['😔','😐','🌸','😊','✨'];
+const moodWidths   = ['30%','45%','65%','80%','95%'];
+const moodGrads    = [
+  'linear-gradient(90deg,var(--peach),var(--lavender))',
+  'linear-gradient(90deg,var(--sky),var(--lavender))',
+  'linear-gradient(90deg,var(--mint),var(--lavender))',
+  'linear-gradient(90deg,var(--mint),var(--sky))',
+  'linear-gradient(90deg,var(--mint),var(--peach))',
+];
+
+function setMood(idx) {
+  document.querySelectorAll('.mood-dot').forEach(d => d.classList.remove('selected'));
+  document.querySelector(`.mood-dot[data-idx="${idx}"]`).classList.add('selected');
+  document.getElementById('moodDesc').innerHTML = moodLabels[idx];
+  saveState({ mood: idx });
+  // update trends Sunday bar
+  const sunRow = document.querySelector('#panel-trends .mood-bar-row:last-child');
+  if (sunRow) {
+    sunRow.querySelector('.mood-bar-fill').style.width = moodWidths[idx];
+    sunRow.querySelector('.mood-bar-fill').style.background = moodGrads[idx];
+    sunRow.querySelector('.mood-bar-emoji').textContent = moodEmojis[idx];
+  }
+}
+
+document.querySelectorAll('.mood-dot').forEach(dot => {
+  dot.addEventListener('click', () => setMood(+dot.dataset.idx));
+});
+
+// restore mood
+if (typeof S.mood === 'number') setMood(S.mood);
+
+/* ═══════════════════════════════════════════════
+   REFLECT MOOD CHIPS
+═══════════════════════════════════════════════ */
+document.querySelectorAll('.mood-chip').forEach((chip, i) => {
+  if (typeof S.reflectMood === 'number' && S.reflectMood === i) chip.classList.add('picked');
+  else if (typeof S.reflectMood !== 'number' && i === 2) chip.classList.add('picked');
+
+  chip.addEventListener('click', () => {
+    document.querySelectorAll('.mood-chip').forEach(c => c.classList.remove('picked'));
+    chip.classList.add('picked');
+    saveState({ reflectMood: i });
+  });
+});
+
+/* ═══════════════════════════════════════════════
+   GRATITUDE INPUTS — persist
+═══════════════════════════════════════════════ */
+const gratInputs = document.querySelectorAll('.gratitude-input');
+gratInputs.forEach((inp, i) => {
+  if (S.gratitude && S.gratitude[i] !== undefined) inp.value = S.gratitude[i];
+  inp.addEventListener('input', () => {
+    const vals = [...gratInputs].map(el => el.value);
+    saveState({ gratitude: vals });
+  });
+});
+
+/* ═══════════════════════════════════════════════
+   DAILY HIGHLIGHT — persist
+═══════════════════════════════════════════════ */
+const hlTA = document.querySelector('.highlight-textarea');
+if (S.highlight !== undefined) hlTA.value = S.highlight;
+hlTA.addEventListener('input', () => saveState({ highlight: hlTA.value }));
+
+/* ═══════════════════════════════════════════════
+   HYDRATION GLASSES
+═══════════════════════════════════════════════ */
+let glassGoal   = S.glassGoal   !== undefined ? S.glassGoal   : 8;
+let glassCount  = S.glassCount  !== undefined ? S.glassCount  : 5;
+const glassGrid = document.getElementById('glassGrid');
+const glassCountEl  = document.getElementById('hydrationCount');
+const trendGlassEl  = document.getElementById('trendGlasses');
+
+function renderGlasses() {
+  glassGrid.innerHTML = '';
+  for (let i = 0; i < glassGoal; i++) {
+    const btn = document.createElement('button');
+    btn.className = 'glass-btn' + (i < glassCount ? ' filled' : '');
+    btn.textContent = i < glassCount ? '💧' : '🫙';
+    btn.setAttribute('aria-label', i < glassCount ? 'Remove glass' : 'Add glass');
+    btn.addEventListener('click', () => {
+      // tap filled glass → set count to i (remove this and above)
+      // tap empty glass → set count to i+1 (fill up to here)
+      const wasCount = glassCount;
+      glassCount = (i < wasCount) ? i : i + 1;
+      saveState({ glassCount });
+      renderGlasses();
+    });
+    glassGrid.appendChild(btn);
+  }
+  glassCountEl.innerHTML = `<strong>${glassCount}</strong> of ${glassGoal} glasses`;
+  trendGlassEl.textContent = glassCount;
+}
+renderGlasses();
+
+/* ═══════════════════════════════════════════════
+   SETTINGS
+═══════════════════════════════════════════════ */
+// Name
+const nameInput = document.querySelector('#panel-settings input[type="text"]');
+if (S.name) nameInput.value = S.name;
+nameInput.addEventListener('input', () => {
+  saveState({ name: nameInput.value });
+  updateGreeting();
+});
+
+// Glass goal
+const goalInput = document.getElementById('glassGoalInput');
+goalInput.value = glassGoal;
+goalInput.addEventListener('change', () => {
+  glassGoal = Math.max(1, Math.min(20, parseInt(goalInput.value) || 8));
+  goalInput.value = glassGoal;
+  glassCount = Math.min(glassCount, glassGoal);
+  saveState({ glassGoal, glassCount });
+  renderGlasses();
+});
+
+// Reduce motion toggle
+const motionToggle = document.querySelector('#panel-settings .toggle input[type="checkbox"]:last-of-type');
+// Actually find it properly — it's the last toggle in Appearance card
+const allToggles = document.querySelectorAll('#panel-settings .toggle input');
+// allToggles: [0]=morning, [1]=hydration, [2]=evening, [3]=theme (no), [3]=reduce motion
+// Appearance card has 1 select + 1 toggle, so reduce motion = allToggles[3]
+const reduceMotionToggle = allToggles[allToggles.length - 1];
+if (S.reduceMotion) reduceMotionToggle.checked = true;
+reduceMotionToggle.addEventListener('change', () => {
+  const reduce = reduceMotionToggle.checked;
+  saveState({ reduceMotion: reduce });
+  document.querySelectorAll('.bubble-core, .bubble-outer, .hydration-bar-fill, .bubble-outer::before, .bubble-outer::after').forEach(el => {
+    el.style.animationPlayState = reduce ? 'paused' : 'running';
+  });
+  document.body.style.setProperty('--motion', reduce ? 'paused' : 'running');
+  // Apply via class
+  document.body.classList.toggle('reduce-motion', reduce);
+});
+if (S.reduceMotion) document.body.classList.add('reduce-motion');
+
+// Theme switcher
+const themeSelect = document.querySelector('.s-select');
+const themes = {
+  'Warm Peach':    { '--bg': '#EEE8E0', '--peach': '#F5C5A3', '--mint': '#A8D5C2', '--sky': '#A3C4E8' },
+  'Ocean Mint':    { '--bg': '#E0EDE8', '--peach': '#A3D4C8', '--mint': '#7EC4AB', '--sky': '#A3C4E8' },
+  'Lavender Dream':{ '--bg': '#E8E0EE', '--peach': '#C9B8E8', '--mint': '#B8D4C9', '--sky': '#B8C8E8' },
+};
+if (S.theme) {
+  themeSelect.value = S.theme;
+  applyTheme(S.theme);
+}
+function applyTheme(name) {
+  const t = themes[name];
+  if (!t) return;
+  Object.entries(t).forEach(([k,v]) => document.documentElement.style.setProperty(k, v));
+}
+themeSelect.addEventListener('change', () => {
+  saveState({ theme: themeSelect.value });
+  applyTheme(themeSelect.value);
+});
+
+// Restore notification toggle states
+const notifToggles = document.querySelectorAll('#panel-settings .toggle input');
+if (S.notifs) {
+  S.notifs.forEach((val, i) => { if (notifToggles[i]) notifToggles[i].checked = val; });
+}
+notifToggles.forEach((t, i) => {
+  t.addEventListener('change', () => {
+    const vals = [...notifToggles].map(el => el.checked);
+    saveState({ notifs: vals });
+  });
+});
+
+/* ═══════════════════════════════════════════════
+   REFLECT TEXTAREAS — persist
+═══════════════════════════════════════════════ */
+const reflectTAs = document.querySelectorAll('.reflect-textarea');
+reflectTAs.forEach((ta, i) => {
+  if (S.reflect && S.reflect[i]) ta.value = S.reflect[i];
+  ta.addEventListener('input', () => {
+    saveState({ reflect: [...reflectTAs].map(el => el.value) });
+  });
+});
+
+/* ═══════════════════════════════════════════════
+   TRENDS — refresh from live state
+═══════════════════════════════════════════════ */
+function refreshTrends() {
+  document.getElementById('trendTasks').textContent =
+    document.querySelectorAll('.tasks-card .checkbox.checked').length;
+  document.getElementById('trendGlasses').textContent = glassCount;
+}
+
+/* ═══════════════════════════════════════════════
+   BREATHING BUBBLE
+═══════════════════════════════════════════════ */
+const phases = [
+  { label: 'Inhale', count: 4, dur: 4000, anim: '4s ease-in' },
+  { label: 'Hold',   count: 4, dur: 4000, anim: '0.1s ease' },
+  { label: 'Exhale', count: 6, dur: 6000, anim: '6s ease-out' },
+  { label: 'Hold',   count: 2, dur: 2000, anim: '0.1s ease' },
+];
+let phaseIdx = 0, running = false, ticker = null, phaseTimer = null;
+const core  = document.getElementById('bubbleCore');
+const bTxt  = document.getElementById('bubbleTxt');
+const bCnt  = document.getElementById('bubbleCount');
+const bHint = document.getElementById('bubbleHint');
+
+// Sync CSS animation speed to breathing phase
+function syncBubbleAnim(idx) {
+  const p = phases[idx];
+  if (idx === 0)      core.style.animation = `breathe ${p.dur/1000}s ease-in-out infinite`;
+  else if (idx === 2) core.style.animation = `breathe ${p.dur/1000}s ease-in-out infinite`;
+}
+
+function startPhase(idx) {
+  const p = phases[idx];
+  bTxt.textContent = p.label;
+  let n = p.count;
+  bCnt.textContent = n;
+  clearInterval(ticker);
+  ticker = setInterval(() => {
+    n = Math.max(0, n - 1);
+    bCnt.textContent = n;
+    if (n === 0) clearInterval(ticker);
+  }, 1000);
+  clearTimeout(phaseTimer);
+  phaseTimer = setTimeout(() => {
+    phaseIdx = (idx + 1) % phases.length;
+    if (running) startPhase(phaseIdx);
+  }, p.dur);
+}
+
+core.addEventListener('click', () => {
+  running = !running;
+  if (running) {
+    bHint.textContent = 'Tap to pause';
+    core.style.animationPlayState = 'running';
+    startPhase(phaseIdx);
+  } else {
+    bHint.textContent = 'Tap to resume';
+    core.style.animationPlayState = 'paused';
+    clearInterval(ticker);
+    clearTimeout(phaseTimer);
+  }
+});
+</script>
+</body>
+</html>
