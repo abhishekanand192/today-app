@@ -530,6 +530,26 @@
           <div class="bubble-hint" id="bubbleHint">Tap to start a guided session</div>
         </div>
 
+        <!-- Hydration + Mood -->
+        <div class="widget-row">
+          <div class="neu plant-card">
+            <div class="lbl">Hydration</div>
+            <div class="glasses-grid" id="glassGrid"></div>
+            <div class="hydration-count" id="hydrationCount"><strong>0</strong> of 8 glasses</div>
+          </div>
+          <div class="neu mood-card">
+            <div class="lbl">Vibe Check</div>
+            <div class="mood-icons">
+              <div class="mood-dot" data-idx="0">😔</div>
+              <div class="mood-dot" data-idx="1">😐</div>
+              <div class="mood-dot" data-idx="2">🌸</div>
+              <div class="mood-dot" data-idx="3">😊</div>
+              <div class="mood-dot" data-idx="4">✨</div>
+            </div>
+            <div class="mood-desc" id="moodDesc">How are you feeling?</div>
+          </div>
+        </div>
+
         <!-- Big 3 -->
         <div class="neu tasks-card mb20">
           <div class="tasks-header">
@@ -585,25 +605,6 @@
           </div>
         </div>
 
-        <!-- Hydration + Mood -->
-        <div class="widget-row">
-          <div class="neu plant-card">
-            <div class="lbl">Hydration</div>
-            <div class="glasses-grid" id="glassGrid"></div>
-            <div class="hydration-count" id="hydrationCount"><strong>0</strong> of 8 glasses</div>
-          </div>
-          <div class="neu mood-card">
-            <div class="lbl">Vibe Check</div>
-            <div class="mood-icons">
-              <div class="mood-dot" data-idx="0">😔</div>
-              <div class="mood-dot" data-idx="1">😐</div>
-              <div class="mood-dot" data-idx="2">🌸</div>
-              <div class="mood-dot" data-idx="3">😊</div>
-              <div class="mood-dot" data-idx="4">✨</div>
-            </div>
-            <div class="mood-desc" id="moodDesc">How are you feeling?</div>
-          </div>
-        </div>
 
       </div>
     </div><!-- end today panel -->
@@ -1186,19 +1187,21 @@ async function fetchWeather(city) {
       return;
     }
     const { latitude, longitude, name, country_code } = geoData.results[0];
+    const useFahrenheit = country_code.toUpperCase() === 'US';
+    const tempUnit = useFahrenheit ? 'fahrenheit' : 'celsius';
     const wxRes = await fetch(
-      `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,weathercode&temperature_unit=fahrenheit&timezone=auto`
+      `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&current=temperature_2m,weathercode&temperature_unit=${tempUnit}&timezone=auto`
     );
     const wxData = await wxRes.json();
     const temp   = Math.round(wxData.current.temperature_2m);
     const code   = wxData.current.weathercode;
     const [icon, desc] = weatherCodeToInfo(code);
-    updateWeatherUI(icon, `${temp}°F`, desc);
+    updateWeatherUI(icon, `${temp}°${useFahrenheit ? 'F' : 'C'}`, desc);
     statusEl.textContent = `${name}, ${country_code.toUpperCase()}`;
     saveState({ location: city });
   } catch {
     statusEl.textContent = 'Offline';
-    updateWeatherUI('🌤️', '—°F', 'No data');
+    updateWeatherUI('🌤️', '—°', 'No data');
   }
 }
 
